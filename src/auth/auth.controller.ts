@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { SignupDto } from './dto/SignupDto';
 import { SigninDto } from './dto/SigninDto';
 import { ResetPasswordDemandDto } from './dto/ResetPasswordDemandeDto';
@@ -22,6 +32,11 @@ export class AuthController {
   @Get('get')
   getAll() {
     return this.authService.getAll();
+  }
+
+  @Get('get/:id')
+  get(@Param('id', ParseIntPipe) postId: number) {
+    return this.authService.get(postId);
   }
 
   @Post('signin')

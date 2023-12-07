@@ -29,6 +29,19 @@ export class AuthService {
     return await this.prismaService.user.findMany();
   }
 
+  async get(userId: number) {
+    return await this.prismaService.user.findUnique({
+      where: {
+        userId,
+      },
+      select: {
+        userId: true,
+        email: true,
+        username: true,
+      },
+    });
+  }
+
   async signup(signupDto: SignupDto) {
     const { email, password, passwordConfirmation, username } = signupDto;
 

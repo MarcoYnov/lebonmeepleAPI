@@ -16,6 +16,7 @@ CREATE TABLE "Post" (
     "title" VARCHAR(255) NOT NULL,
     "body" TEXT NOT NULL,
     "userId" INTEGER NOT NULL,
+    "image" TEXT NOT NULL,
 
     CONSTRAINT "Post_pkey" PRIMARY KEY ("postId")
 );

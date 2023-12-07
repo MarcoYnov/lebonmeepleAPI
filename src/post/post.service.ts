@@ -18,26 +18,26 @@ export class PostService {
   async create(createPostDto: CreatePostDto, request: Request) {
     try {
       const userId = request.user['userId'];
-      const { body, title } = createPostDto;
+      const { body, title, image } = createPostDto;
       const post = await this.prismaService.post.create({
         data: {
           body: body,
           title: title,
           userId: userId,
+          image: image,
         },
       });
 
       const user = await this.prismaService.user.findUnique({
         where: { userId },
+        select: {
+          userId: true,
+          email: true,
+          username: true,
+        },
       });
 
-      const newUser = {
-        userId: user.userId,
-        email: user.email,
-        username: user.username,
-      };
-
-      return { ...post, user: newUser };
+      return { ...post, user };
     } catch (err) {
       throw new BadRequestException('User not found');
     }
