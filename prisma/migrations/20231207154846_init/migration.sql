@@ -6,6 +6,7 @@ CREATE TABLE "User" (
     "password" VARCHAR(255) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updateAt" TIMESTAMP(3) NOT NULL,
+    "avatar" TEXT NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("userId")
 );
@@ -16,6 +17,7 @@ CREATE TABLE "Post" (
     "title" VARCHAR(255) NOT NULL,
     "body" TEXT NOT NULL,
     "userId" INTEGER NOT NULL,
+    "image" TEXT NOT NULL,
 
     CONSTRAINT "Post_pkey" PRIMARY KEY ("postId")
 );

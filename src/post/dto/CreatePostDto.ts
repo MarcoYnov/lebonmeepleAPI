@@ -8,7 +8,7 @@ export class CreatePostDto {
   @ApiProperty()
   @IsNotEmpty()
   readonly body: string;
-  // @ApiProperty()
-  // @IsNotEmpty()
-  // readonly image: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  readonly image: string;
 }
