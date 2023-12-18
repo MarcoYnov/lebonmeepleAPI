@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { SignupDto } from './dto/SignupDto';
 import { SigninDto } from './dto/SigninDto';
 import { ResetPasswordDemandDto } from './dto/ResetPasswordDemandeDto';
@@ -8,6 +19,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { DeleteAccountDto } from './dto/DeleteAccountDto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UpdateDto } from './dto/UpdateDto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -22,6 +34,11 @@ export class AuthController {
   @Get('get')
   getAll() {
     return this.authService.getAll();
+  }
+
+  @Get('get/:id')
+  get(@Param('id', ParseIntPipe) postId: number) {
+    return this.authService.get(postId);
   }
 
   @Post('signin')
@@ -53,5 +70,14 @@ export class AuthController {
     const userId = request.user['userId'];
 
     return this.authService.deleteAccount(userId, deleteAccountDto);
+  }
+
+  @ApiBearerAuth()
+  @Patch('patch/:id')
+  patchUser(
+    @Param('id', ParseIntPipe) userId: number,
+    @Body() updateDto: UpdateDto,
+  ) {
+    return this.authService.patchUser(userId, updateDto);
   }
 }

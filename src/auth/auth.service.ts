@@ -15,6 +15,7 @@ import { ResetPasswordDemandDto } from './dto/ResetPasswordDemandeDto';
 import * as speakeasy from 'speakeasy';
 import { ResetPasswordConfirmationDto } from './dto/ResetPasswordConfirmationDto';
 import { DeleteAccountDto } from './dto/DeleteAccountDto';
+import { UpdateDto } from './dto/UpdateDto';
 
 @Injectable()
 export class AuthService {
@@ -29,8 +30,22 @@ export class AuthService {
     return await this.prismaService.user.findMany();
   }
 
+  async get(userId: number) {
+    return await this.prismaService.user.findUnique({
+      where: {
+        userId,
+      },
+      select: {
+        userId: true,
+        email: true,
+        username: true,
+      },
+    });
+  }
+
   async signup(signupDto: SignupDto) {
-    const { email, password, passwordConfirmation, username } = signupDto;
+    const { email, password, passwordConfirmation, username, avatar } =
+      signupDto;
 
     if (password !== passwordConfirmation)
       throw new ConflictException('password is not the same');
@@ -44,7 +59,7 @@ export class AuthService {
     const hash = await bcrypt.hash(password, 10);
 
     await this.prismaService.user.create({
-      data: { email, username, password: hash },
+      data: { email, username, password: hash, avatar },
     });
 
     await this.mailerService.sendSignupConfirmation(email);
@@ -60,22 +75,25 @@ export class AuthService {
     });
     if (!user) throw new NotFoundException('User not found');
 
-    const userLocalStorage = {
-      id: user.userId,
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) throw new UnauthorizedException('Credentials are not good');
+
+    const userToken = {
+      userId: user.userId,
       username: user.username,
       email: user.email,
     };
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) throw new UnauthorizedException('Credentials are not good');
+    const userStorage = { ...userToken, avatar: user.avatar };
 
-    const token = this.jwtService.sign(userLocalStorage, {
+    const token = this.jwtService.sign(userToken, {
       expiresIn: '2h',
       secret: this.configService.get('SECRET_KEY'),
     });
 
     return {
       token,
+      userStorage,
     };
   }
 
@@ -149,5 +167,20 @@ export class AuthService {
     await this.prismaService.user.delete({ where: { userId } });
 
     return { data: 'User successfully deleted !' };
+  }
+
+  async patchUser(userId: number, updateDto: UpdateDto) {
+    const { username, email, avatar } = updateDto;
+
+    try {
+      const user = await this.prismaService.user.update({
+        where: { userId },
+        data: { username, email, avatar },
+      });
+
+      return user;
+    } catch (err) {
+      throw new NotFoundException(err.message);
+    }
   }
 }

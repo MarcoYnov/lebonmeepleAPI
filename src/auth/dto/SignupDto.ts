@@ -15,4 +15,7 @@ export class SignupDto {
   @ApiProperty()
   @IsNotEmpty()
   readonly passwordConfirmation: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  readonly avatar: string;
 }

@@ -35,8 +35,8 @@ export class PostController {
   }
 
   @Get('get/:id')
-  get(@Param('id', ParseIntPipe) postId: number) {
-    return this.postService.get(postId);
+  get(@Param('id', ParseIntPipe) userId: number) {
+    return this.postService.get(userId);
   }
 
   @ApiBearerAuth()
