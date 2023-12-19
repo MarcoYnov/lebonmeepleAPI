@@ -178,7 +178,14 @@ export class AuthService {
         data: { username, email, avatar },
       });
 
-      return user;
+      const userReturned = {
+        username: user.username,
+        userId: user.userId,
+        email: user.email,
+        avatar: user.avatar,
+      };
+
+      return userReturned;
     } catch (err) {
       throw new NotFoundException(err.message);
     }

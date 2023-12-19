@@ -16,18 +16,18 @@ export class PostService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(createPostDto: CreatePostDto, request: Request) {
-    try {
-      const userId = request.user['userId'];
-      const { body, title, image } = createPostDto;
-      const post = await this.prismaService.post.create({
-        data: {
-          body: body,
-          title: title,
-          userId: userId,
-          image: image,
-        },
-      });
+    const userId = request.user['userId'];
+    const { body, title, image } = createPostDto;
+    const post = await this.prismaService.post.create({
+      data: {
+        body: body,
+        title: title,
+        userId: userId,
+        image: image,
+      },
+    });
 
+    try {
       const user = await this.prismaService.user.findUnique({
         where: { userId },
         select: {
@@ -71,8 +71,18 @@ export class PostService {
 
   async get(postId: number) {
     try {
-      return await this.prismaService.post.findUniqueOrThrow({
+      return await this.prismaService.post.findUnique({
         where: { postId },
+        include: {
+          user: {
+            select: {
+              username: true,
+              email: true,
+              password: false,
+              userId: true,
+            },
+          },
+        },
       });
     } catch (err) {
       throw new NotFoundException('Post not found !');
