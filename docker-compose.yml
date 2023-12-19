@@ -25,6 +25,8 @@ services:
       - db
     volumes:
       - .:/app
+    command: "bash -c \"npm run prisma:migrate && npm run start:dev\""
+
 
   adminer:
     image: adminer
